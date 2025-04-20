@@ -1,0 +1,9 @@
+.env
+
+*.db
+
+.air.toml
+
+tmp
+
+.vscode
