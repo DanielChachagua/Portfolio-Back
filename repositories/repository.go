@@ -7,3 +7,5 @@ import (
 type Repository struct {
 	DB *gorm.DB
 }
+
+var Repo *Repository

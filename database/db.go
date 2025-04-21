@@ -6,11 +6,14 @@ import (
 	"log"
 	"reflect"
 
+	"os"
+	"time"
+
 	"github.com/DanielChachagua/Portfolio-Back/models"
+	"github.com/DanielChachagua/Portfolio-Back/utils"
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"time"
 )
 
 func ConectDB(uri string) (*gorm.DB, error) {
@@ -22,9 +25,22 @@ func ConectDB(uri string) (*gorm.DB, error) {
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Project{})
 
+	var email string 
+	db.Model(&models.User{}).Select("email").Where("email = ?", os.Getenv("ADMIN_EMAIL")).Scan(&email)
+
+	if email != "" {
+		log.Println("El usuario ya existe en la base de datos")
+		return db, nil
+	}
 	newId := uuid.NewString()
 
-	db.Create(&models.User{ID: newId, Username: "pedrito", Email: "pedrito@gmail.com", Password: "11111111111", UrlImage: nil, CreatedAt: time.Now().UTC(), UpdatedAt: time.Now().UTC()})
+	pass, err := utils.HashPassword(os.Getenv("ADMIN_PASSWORD"))
+
+	if err != nil {
+		return nil, err
+	}
+
+	db.Create(&models.User{ID: newId, Username: os.Getenv("ADMIN_USERNAME"), Email: os.Getenv("ADMIN_EMAIL"), Password: pass, UrlImage: nil, CreatedAt: time.Now().UTC(), UpdatedAt: time.Now().UTC()})
 
 	return db, nil
 }

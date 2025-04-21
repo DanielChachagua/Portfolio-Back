@@ -6,17 +6,23 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func AuthLogin(c *fiber.Ctx) error {
-	var loginRequest models.Login
-	if err := c.BodyParser(&loginRequest); err != nil {
+func CreateProject(c *fiber.Ctx) error {
+	// Parse the request body
+	file, err := c.FormFile("image")
+	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status: false, 
-			Body: nil, 
-			Message: "Invalid request",
+			Status:  false,
+			Body:    nil,
+			Message: "Failed to parse image file",
 		})
 	}
 
-	if err := loginRequest.Validate(); err != nil {
+	var project models.CreateProject
+	project.Title = c.FormValue("title")
+	project.Description = c.FormValue("description")
+	project.Link = c.FormValue("link")
+
+	if err := project.Validate(); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status: false, 
 			Body: nil, 
@@ -24,7 +30,7 @@ func AuthLogin(c *fiber.Ctx) error {
 		})
 	}
 
-	token, err := services.AuthLogin(loginRequest.Email, loginRequest.Password)
+	id, err := services.CreateProject(file, &project)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -40,9 +46,9 @@ func AuthLogin(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(200).JSON(models.Response{
+	return c.Status(fiber.StatusCreated).JSON(models.Response{
 		Status:  true,
-		Body:    token,
-		Message: "Token obtenido con éxito",
+		Body:    id,
+		Message: "Project created successfully",
 	})
 }

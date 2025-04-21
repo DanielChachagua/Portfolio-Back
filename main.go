@@ -7,6 +7,8 @@ import (
 	"github.com/DanielChachagua/Portfolio-Back/database"
 	"github.com/DanielChachagua/Portfolio-Back/dependencies"
 	"github.com/DanielChachagua/Portfolio-Back/middleware"
+	"github.com/DanielChachagua/Portfolio-Back/repositories"
+	"github.com/DanielChachagua/Portfolio-Back/routes"
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
@@ -27,7 +29,13 @@ func main() {
 
 	app := fiber.New()
 
-	app.Use(middleware.InjectApp(dependencies.NewDependency(db)))
+	dep := dependencies.NewDependency(db)
+
+	app.Use(middleware.LoggingMiddleware)
+
+	routes.SetupRoutes(app)
+
+	repositories.Repo = dep.Repository
 
 	log.Fatal(app.Listen(":3000"))
 }
