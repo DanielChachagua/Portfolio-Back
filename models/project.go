@@ -15,6 +15,7 @@ type Project struct {
 	Description string    `gorm:"not null" json:"description"`
 	Link        string   `gorm:"type:text" json:"link"`
 	UrlImage    string    `gorm:"type:text" json:"image"`
+	Favorite    bool      `gorm:"default:false" json:"favorite"`
 	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 }
@@ -23,6 +24,7 @@ type CreateProject struct {
 	Title       string  `json:"title" validate:"required"`
 	Description string  `json:"description" validate:"required"`
 	Link        string `json:"link"`
+	Favorite    bool     `json:"favorite" validate:"default=false"`
 }
 
 func (cp *CreateProject) Validate() error {
@@ -59,6 +61,7 @@ type UpdateProject struct {
 	Title       string  `json:"title" validate:"required"`
 	Description string  `json:"description"`
 	Link        string `json:"link" validate:"required"`
+	Favorite    bool     `json:"favorite" validate:"default=false"`
 }
 
 func (up *UpdateProject) Validate() error {

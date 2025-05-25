@@ -8,6 +8,7 @@ import (
 
 func AuthLogin(c *fiber.Ctx) error {
 	var loginRequest models.Login
+
 	if err := c.BodyParser(&loginRequest); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status: false, 
@@ -46,3 +47,5 @@ func AuthLogin(c *fiber.Ctx) error {
 		Message: "Token obtenido con éxito",
 	})
 }
+
+

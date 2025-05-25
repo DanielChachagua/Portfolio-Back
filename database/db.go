@@ -17,7 +17,7 @@ import (
 )
 
 func ConectDB(uri string) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("portfolio.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(uri), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func ConectDB(uri string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.Create(&models.User{ID: newId, Username: os.Getenv("ADMIN_USERNAME"), Email: os.Getenv("ADMIN_EMAIL"), Password: pass, UrlImage: nil, CreatedAt: time.Now().UTC(), UpdatedAt: time.Now().UTC()})
+	db.Create(&models.User{ID: newId, FirstName: os.Getenv("ADMIN_FIRST_NAME"), LastName: os.Getenv("ADMIN_LAST_NAME"), Username: os.Getenv("ADMIN_USERNAME"), Email: os.Getenv("ADMIN_EMAIL"), Password: pass, UrlImage: "", CreatedAt: time.Now().UTC(), UpdatedAt: time.Now().UTC()})
 
 	return db, nil
 }

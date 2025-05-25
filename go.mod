@@ -32,9 +32,8 @@ require (
 
 require (
 	github.com/gabriel-vasile/mimetype v1.4.8 // indirect
-	github.com/go-playground/locales v0.14.1 // indirect
-	github.com/go-playground/universal-translator v0.18.1 // indirect
-	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/go-playground/locales v0.14.1
+	github.com/go-playground/universal-translator v0.18.1 // direct
 	github.com/leodido/go-urn v1.4.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 )
