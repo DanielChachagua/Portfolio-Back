@@ -24,6 +24,7 @@ func ConectDB(uri string) (*gorm.DB, error) {
 
 	db.AutoMigrate(&models.User{})
 	db.AutoMigrate(&models.Project{})
+	db.AutoMigrate(&models.Skill{})
 
 	var email string 
 	db.Model(&models.User{}).Select("email").Where("email = ?", os.Getenv("ADMIN_EMAIL")).Scan(&email)
