@@ -8,4 +8,5 @@ func SetupRoutes(app *fiber.App) {
 	SkillRoutes(app)
 	UserRoutes(app)
 	ImageRoutes(app)
+	EmailRoutes(app)
 }

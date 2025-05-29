@@ -5,11 +5,14 @@ import "github.com/go-playground/validator/v10"
 type Skill struct {
 	ID   string    `gorm:"primaryKey" json:"id"`
 	Name string `gorm:"size:100;not null" json:"name"`
+	Area string `gorm:"size:100;not null" json:"area" validate:"required,oneof=languaje tool hability"`
+	UrlImage string `gorm:"type:text" json:"url_image"`
 	Projects []Project `gorm:"many2many:project_skills;" json:"projects"`
 }
 
 type SkillCreate struct {
 	Name string `json:"name" validate:"required"`
+	Area string `json:"area" validate:"required,oneof=languaje tool hability"`
 }
 
 func (s *SkillCreate) Validate() error {
@@ -19,6 +22,7 @@ func (s *SkillCreate) Validate() error {
 
 type SkillUpdate struct {
 	Name string `json:"name" validate:"required"`
+	Area string `json:"area" validate:"required,oneof=languaje tool hability"`
 }
 
 func (s *SkillUpdate) Validate() error {

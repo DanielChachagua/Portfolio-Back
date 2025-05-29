@@ -7,14 +7,27 @@ import (
 )
 
 func SkillCreate(c *fiber.Ctx) error {
-	var skillCreate models.SkillCreate
-	if err := c.BodyParser(&skillCreate); err != nil {
+	file, err := c.FormFile("image")
+	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
-			Status: false,
-			Message: "Invalid request",
-			Body: nil,
+			Status:  false,
+			Body:    nil,
+			Message: "Failed to parse image file",
 		})
 	}
+
+	if file.Size > 1*1024*1024 {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: "La imagen no debe superar 1MB",
+		})
+	}
+
+	var skillCreate models.SkillCreate
+	skillCreate.Name = c.FormValue("name")
+	skillCreate.Area = c.FormValue("area")
+
 	if err := skillCreate.Validate(); err != nil {
 		return c.Status(422).JSON(models.Response{
 			Status: false,
@@ -23,7 +36,7 @@ func SkillCreate(c *fiber.Ctx) error {
 		})
 	}
 
-	id, err := services.SkillCreate(&skillCreate)
+	id, err := services.SkillCreate(&skillCreate, file)
 
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
@@ -48,7 +61,8 @@ func SkillCreate(c *fiber.Ctx) error {
 }
 
 func SkillGetAll(c *fiber.Ctx) error {
-	skills, err := services.SkillGetAll()
+	baseUrl := c.BaseURL()
+	skills, err := services.SkillGetAll(baseUrl)
 	if err != nil {
 		return c.Status(500).JSON(models.Response{
 			Status: false,
@@ -74,14 +88,20 @@ func SkillUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	var skillUpdate models.SkillUpdate
-	if err := c.BodyParser(&skillUpdate); err != nil {
-		return c.Status(400).JSON(models.Response{
-			Status: false,
-			Message: "Invalid request",
-			Body: nil,
+	file, _ := c.FormFile("image")
+
+	if file.Size > 1*1024*1024 {
+		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+				Status:  false,
+				Body:    nil,
+				Message: "La imagen no debe superar 1MB",
 		})
 	}
+
+	var skillUpdate models.SkillUpdate
+	skillUpdate.Name = c.FormValue("name")
+	skillUpdate.Area = c.FormValue("area")
+
 	if err := skillUpdate.Validate(); err != nil {
 		return c.Status(422).JSON(models.Response{
 			Status: false,
@@ -90,7 +110,7 @@ func SkillUpdate(c *fiber.Ctx) error {
 		})
 	}
 
-	err := services.SkillUpdate(id, &skillUpdate)
+	err := services.SkillUpdate(id, &skillUpdate, file)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

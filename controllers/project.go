@@ -7,6 +7,14 @@ import (
 )
 
 func CreateProject(c *fiber.Ctx) error {
+	form, err := c.MultipartForm()
+	if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+					Status:  false,
+					Body:    nil,
+					Message: "Failed to parse multipart form",
+			})
+	}
 	// Parse the request body
 	file, err := c.FormFile("image")
 	if err != nil {
@@ -17,11 +25,25 @@ func CreateProject(c *fiber.Ctx) error {
 		})
 	}
 
+	if file.Size > 1*1024*1024 {
+    return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+        Status:  false,
+        Body:    nil,
+        Message: "La imagen no debe superar 1MB",
+    })
+}
+
 	var project models.CreateProject
 	project.Title = c.FormValue("title")
 	project.Description = c.FormValue("description")
 	project.Link = c.FormValue("link")
 	project.Favorite = c.FormValue("favorite") == "true"
+	
+	if form != nil && form.Value != nil {
+			project.SkillsID = form.Value["skills_id"] // []string
+	} else {
+			project.SkillsID = []string{}
+	}
 
 	if err := project.Validate(); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -55,6 +77,7 @@ func CreateProject(c *fiber.Ctx) error {
 }
 
 func GetProjectByID(c *fiber.Ctx) error {
+	baseUrl := c.BaseURL()
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -64,7 +87,7 @@ func GetProjectByID(c *fiber.Ctx) error {
 		})
 	}
 
-	project, err := services.GetProjectByID(id)
+	project, err := services.GetProjectByID(id, baseUrl)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -88,7 +111,8 @@ func GetProjectByID(c *fiber.Ctx) error {
 }
 
 func GetAllProjects(c *fiber.Ctx) error {
-	projects, err := services.GetAllProjects()
+	baseUrl := c.BaseURL()
+	projects, err := services.GetAllProjects(baseUrl)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -112,7 +136,8 @@ func GetAllProjects(c *fiber.Ctx) error {
 }
 
 func GetFavorites(c *fiber.Ctx) error {
-	projects, err := services.GetFavorites()
+	baseUrl := c.BaseURL()
+	projects, err := services.GetFavorites(baseUrl)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
@@ -136,6 +161,15 @@ func GetFavorites(c *fiber.Ctx) error {
 }
 
 func UpdateProject(c *fiber.Ctx) error {
+	form, err := c.MultipartForm()
+	if err != nil {
+			return c.Status(fiber.StatusBadRequest).JSON(models.Response{
+					Status:  false,
+					Body:    nil,
+					Message: "Failed to parse multipart form",
+			})
+	}
+
 	id := c.Params("id")
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
@@ -153,6 +187,12 @@ func UpdateProject(c *fiber.Ctx) error {
 	project.Link = c.FormValue("link")
 	project.Favorite = c.FormValue("favorite") == "true"
 
+	if form != nil && form.Value != nil {
+			project.SkillsID = form.Value["skills_id"] // []string
+	} else {
+			project.SkillsID = []string{}
+	}
+
 	if err := project.Validate(); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(models.Response{
 			Status: false, 
@@ -161,7 +201,7 @@ func UpdateProject(c *fiber.Ctx) error {
 		})
 	}
 
-	err := services.UpdateProject(id, file, &project)
+	err = services.UpdateProject(id, file, &project)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/DanielChachagua/Portfolio-Back/models"
+	"github.com/DanielChachagua/Portfolio-Back/utils"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -12,9 +13,6 @@ import (
 func (r *Repository) GetProjectByID(id string) (*models.Project, error) {
 	var project models.Project
 	if err := r.DB.Preload("Skills").First(&project, id).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, models.ErrorResponse(404, "Proyecto no encontrado", err)
-		}
 		return nil, err
 	}
 	return &project, nil
@@ -84,6 +82,11 @@ func (r *Repository) DeleteProject(id string) error {
 		return err
 	}
 
+	err = utils.DeleteImage(project.UrlImage)
+	if err != nil {
+		return models.ErrorResponse(500, "Error al eliminar la imagen del proyecto", err)
+	}
+
 	return nil
 }
 
@@ -129,7 +132,7 @@ func (r *Repository) CreateProject(urlImage string, projectData *models.CreatePr
 
 func (r *Repository) UpdateProject(id string, urlImage string, projectUpdate *models.UpdateProject) error {
 	var project models.Project
-	if err := r.DB.First(&project, id).Error; err != nil {
+	if err := r.DB.First(&project, "id = ?", id).Error; err != nil {
 		return err
 	}
 
@@ -138,6 +141,10 @@ func (r *Repository) UpdateProject(id string, urlImage string, projectUpdate *mo
 	project.Link = projectUpdate.Link
 	project.Favorite = projectUpdate.Favorite
 	if urlImage != "" {
+		err := utils.DeleteImage(project.UrlImage)
+		if err != nil {
+			return err
+		}
 		project.UrlImage = urlImage
 	}
 	project.UpdatedAt = time.Now().UTC()

@@ -14,7 +14,7 @@ type Project struct {
 	Title       string    `gorm:"size:100;not null" json:"title"`
 	Description string    `gorm:"not null" json:"description"`
 	Link        string    `gorm:"type:text" json:"link"`
-	UrlImage    string    `gorm:"type:text" json:"image"`
+	UrlImage    string    `gorm:"type:text" json:"url_image"`
 	Favorite    bool      `gorm:"default:false" json:"favorite"`
 	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
@@ -25,7 +25,7 @@ type CreateProject struct {
 	Title       string   `json:"title" validate:"required"`
 	Description string   `json:"description" validate:"required"`
 	Link        string   `json:"link"`
-	Favorite    bool     `json:"favorite" validate:"default=false"`
+	Favorite    bool     `json:"favorite" vaidate:"required"`
 	SkillsID    []string `json:"skills_id" validate:"required"`
 }
 
@@ -63,7 +63,7 @@ type UpdateProject struct {
 	Title       string `json:"title" validate:"required"`
 	Description string `json:"description"`
 	Link        string `json:"link" validate:"required"`
-	Favorite    bool   `json:"favorite" validate:"default=false"`
+	Favorite    bool   `json:"favorite" validate:"required"`
 	SkillsID    []string `json:"skills_id" validate:"required"`
 }
 

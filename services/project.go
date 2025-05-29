@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"mime/multipart"
 
 	"github.com/DanielChachagua/Portfolio-Back/models"
@@ -27,23 +28,41 @@ func CreateProject(image *multipart.FileHeader, project *models.CreateProject) (
 	return projectID, nil
 }
 
-func GetProjectByID(id string) (*models.Project, error) {
+func GetProjectByID(id string, baseUrl string) (*models.Project, error) {
+	project, err := repositories.Repo.GetProjectByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, models.ErrorResponse(404, "Proyecto no encontrado", err)
+		}
+		return nil, models.ErrorResponse(500, "Error al buscar el proyecto", err)
+	}
+
+	(*project).UrlImage = fmt.Sprintf("%s/image/get/%s", baseUrl, project.UrlImage)
 	return repositories.Repo.GetProjectByID(id)
 }
 
-func GetAllProjects() (*[]models.Project, error) {
+func GetAllProjects(baseUrl string) (*[]models.Project, error) {
 	projects, err := repositories.Repo.GetAllProjects()
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al obtener los proyectos", err)
 	}
+
+	for i, project := range *projects {
+		(*projects)[i].UrlImage = fmt.Sprintf("%s/image/get/%s", baseUrl, project.UrlImage)
+	}
 	return projects, nil
 }
 
-func GetFavorites() (*[]models.Project, error) {
+func GetFavorites(baseUrl string) (*[]models.Project, error) {
 	projects, err := repositories.Repo.GetFavorites()
 	if err != nil {
 		return nil, models.ErrorResponse(500, "Error al obtener los proyectos", err)
 	}
+
+	for i, project := range *projects {
+		(*projects)[i].UrlImage = fmt.Sprintf("%s/image/get/%s", baseUrl, project.UrlImage)
+	}
+
 	return projects, nil
 }
 
