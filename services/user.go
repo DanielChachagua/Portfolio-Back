@@ -12,7 +12,7 @@ func CreateUser(user *models.UserCreate) (string, error) {
 	return repositories.Repo.CreateUser(user)
 }
 
-func GetUser() (*models.UserResponse, error) {
+func GetUser(baseUrl string) (*models.UserResponse, error) {
 	user, err := repositories.Repo.GetUser()
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -23,5 +23,8 @@ func GetUser() (*models.UserResponse, error) {
 		}
 		return nil, err
 	}
+
+	(*user).UrlImage = baseUrl + "/image/get/" + (*user).UrlImage
+
 	return user, nil
 }

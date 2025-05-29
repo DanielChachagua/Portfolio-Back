@@ -8,7 +8,8 @@ import (
 
 
 func GetUser (c *fiber.Ctx) error {
-	user, err := services.GetUser()
+	baseUrl := c.BaseURL()
+	user, err := services.GetUser(baseUrl)
 	if err != nil {
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
