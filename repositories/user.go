@@ -9,7 +9,7 @@ import (
 
 func (r *Repository) GetUserByID(id string) (*models.User, error) {
 	var user models.User
-	err := r.DB.First(&user, id).Error
+	err := r.DB.Where("id = ?", id).First(&user).Error
 	
 	if err != nil {
 		return nil, err

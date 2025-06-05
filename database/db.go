@@ -41,7 +41,7 @@ func ConectDB(uri string) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	db.Create(&models.User{ID: newId, FirstName: os.Getenv("ADMIN_FIRST_NAME"), LastName: os.Getenv("ADMIN_LAST_NAME"), Username: os.Getenv("ADMIN_USERNAME"), Email: os.Getenv("ADMIN_EMAIL"), Password: pass, UrlImage: "", CreatedAt: time.Now().UTC(), UpdatedAt: time.Now().UTC()})
+	db.Create(&models.User{ID: newId, FirstName: os.Getenv("ADMIN_FIRST_NAME"), LastName: os.Getenv("ADMIN_LAST_NAME"), Username: os.Getenv("ADMIN_USERNAME"), Email: os.Getenv("ADMIN_EMAIL"), Password: pass, UrlImage: "52e05848-27b1-424e-bc77-151cd6762842.jpeg", CreatedAt: time.Now().UTC(), UpdatedAt: time.Now().UTC()})
 
 	return db, nil
 }

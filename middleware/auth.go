@@ -16,7 +16,7 @@ func AuthMiddleware() fiber.Handler {
 		// Verificar si el token es válido
 		if token == "" {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error": "Token no proporcionado",
+				"error": "Usuario no autenticado",
 			})
 		}
 

@@ -31,10 +31,10 @@ func main() {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*",
-		AllowMethods:     "*",
-		AllowHeaders:     "*",
-		AllowCredentials: false,
+		AllowOrigins:     "https://dchachagua.saltaget.com, https://www.dchachagua.saltaget.com",
+		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: true,
 	}))
 
 	dep := dependencies.NewDependency(db)
@@ -45,5 +45,5 @@ func main() {
 
 	repositories.Repo = dep.Repository
 
-	log.Fatal(app.Listen(":4000"))
+	log.Fatal(app.Listen(":2000"))
 }
