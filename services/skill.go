@@ -14,6 +14,7 @@ import (
 func SkillCreate(skill *models.SkillCreate, file *multipart.FileHeader) (string, error) {
 	nameImage, err := utils.SaveImage(file)
 	if err != nil {
+		fmt.Println(err)
 		return "", models.ErrorResponse(500, "Error al guardar la imagen", err)
 	}
 
