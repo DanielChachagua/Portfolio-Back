@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/DanielChachagua/Portfolio-Back/models"
 	"github.com/DanielChachagua/Portfolio-Back/services"
 	"github.com/gofiber/fiber/v2"
@@ -39,6 +41,7 @@ func SkillCreate(c *fiber.Ctx) error {
 	id, err := services.SkillCreate(&skillCreate, file)
 
 	if err != nil {
+		fmt.Println(err)
 		if errResp, ok := err.(*models.ErrorStruc); ok {
 			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
